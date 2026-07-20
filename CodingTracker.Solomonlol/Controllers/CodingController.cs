@@ -2,6 +2,7 @@
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,17 +19,27 @@ namespace CodingTracker.Solomonlol.Controllers
                 return db.Query<CodingSession>("SELECT * FROM CodingSessions").ToList();
             }
         }
-        public void DeleteData()
+        public void DeleteData(int id)
+        {
+            using (IDbConnection db = new SqliteConnection(GetConString()))
+            {
+                var sqlQuery="DELETE FROM CodingSessions WHERE Id=@id";
+                var check=db.Execute(sqlQuery, new { id });
+                if (check == 0)
+                {
+                    AnsiConsole.MarkupLine($"[red]Cannot found record whith Id={id} to delete.[/]");
+
+                }
+                else AnsiConsole.MarkupLine($"[green]Record whith Id={id} was deleted.[/]");
+            }
+        }
+
+        public void UpdateData(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateData()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void WriteData()
+        public void PrintData()
         {
             throw new NotImplementedException();
         }
@@ -47,7 +58,7 @@ namespace CodingTracker.Solomonlol.Controllers
         {
             using (IDbConnection db = new SqliteConnection(GetConString()))
             {
-                
+                db.Open();
                 var sqlQuery = "CREATE TABLE IF NOT EXISTS CodingSessions" +
                     "(Id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "Date TEXT NOT NULL," +
@@ -55,6 +66,7 @@ namespace CodingTracker.Solomonlol.Controllers
                     "EndTime TEXT NOT NULL," +
                     "Duration TEXT NOT NULL)";
                 db.Execute(sqlQuery);
+                db.Close();
             }
         }
     }

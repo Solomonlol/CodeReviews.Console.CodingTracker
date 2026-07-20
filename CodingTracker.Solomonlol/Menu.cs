@@ -16,8 +16,8 @@ namespace CodingTracker.Solomonlol
             controller.CreateTableIfNotExists();
             controller.GetData();
             var choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
-                .Title("Select an [green]environment[/]:")
-                .AddChoices("Development", "Staging", "Production"));
+                .Title("Select an [green]option[/]:")
+                .AddChoices("Show Data", "Add new record", "Update record", "Delete record", "Close app"));
 
             AnsiConsole.MarkupLine($"Deploying to [blue]{choice}[/]");
             

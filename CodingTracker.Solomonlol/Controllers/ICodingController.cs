@@ -8,10 +8,10 @@ namespace CodingTracker.Solomonlol.Controllers
     internal interface ICodingController
     {
         public List<CodingSession> GetData();
-        public void UpdateData();
+        public void UpdateData(int id);
         public void CreateTableIfNotExists();
-        public void DeleteData();
-        public void WriteData();
+        public void DeleteData(int id);
+        public void PrintData();
         public string GetConString();
     }
 }
