@@ -1,0 +1,15 @@
+﻿{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "DatabaseSettings": {
+    "SQLiteDbPath": "ApplicationDatabase.db"
+  },
+  "ConnectionStrings": {
+    "SQLiteConnection": "Data Source=ApplicationDatabase.db;"
+  }
+}
