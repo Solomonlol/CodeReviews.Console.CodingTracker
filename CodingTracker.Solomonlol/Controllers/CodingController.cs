@@ -96,18 +96,22 @@ namespace CodingTracker.Solomonlol.Controllers
         {
             AnsiConsole.Clear();
             var toPrint = GetData();
-            var table = new Table();
-            table.AddColumns("ID", "Date", "Start time", "End time", "Duration");
-
-            foreach (var c in toPrint)
+            if (toPrint.Count>0)
             {
-                table.AddRow($"{c.Id}",
-                             $"{c.Date}",
-                             $"{c.StartTime}",
-                             $"{c.EndTime}",
-                             $"{c.Duration}");
+                var table = new Table();
+                table.AddColumns("ID", "Date", "Start time", "End time", "Duration");
+
+                foreach (var c in toPrint)
+                {
+                    table.AddRow($"{c.Id}",
+                                 $"{c.Date}",
+                                 $"{c.StartTime}",
+                                 $"{c.EndTime}",
+                                 $"{c.Duration}");
+                }
+                AnsiConsole.Write(table);
             }
-            AnsiConsole.Write(table);
+            else AnsiConsole.MarkupLine("[red]Database is empty.[/]");
         }
 
         private string GetConString()
