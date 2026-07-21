@@ -18,7 +18,7 @@ namespace CodingTracker.Solomonlol.Model
 
         public CodingSession(DateTime startTime, DateTime endTime, int? id = null)
         {
-            Id= id;
+            Id = id;
             Date = DateOnly.FromDateTime(startTime).ToString();
             StartTime = TimeOnly.FromDateTime(startTime).ToString();
             EndTime = TimeOnly.FromDateTime(endTime).ToString();

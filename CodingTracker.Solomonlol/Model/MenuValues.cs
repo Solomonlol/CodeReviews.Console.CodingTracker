@@ -3,13 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using static CodingTracker.Solomonlol.Controllers.CodingController;
 
 namespace CodingTracker.Solomonlol.Model
 {
-    public class MenuValues
+    public static class MenuValues
     {
-        private static CodingController cod = new();
+        internal static CodingController cod = new();
         public static Dictionary<string, Action> menuValues = new()
         {
             { "Print all records", () => cod.PrintData() },
@@ -18,5 +17,7 @@ namespace CodingTracker.Solomonlol.Model
             { "Delete record", () => cod.DeleteData() },
             { "Exit", () => cod.Exit() }
         };
+
+        
     }
 }

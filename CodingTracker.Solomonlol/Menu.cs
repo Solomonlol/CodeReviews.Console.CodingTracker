@@ -12,8 +12,10 @@ namespace CodingTracker.Solomonlol
 {
     internal class Menu
     {
+        
         public void MainMenu()
         {
+            cod.CreateTableIfNotExists();
             while (true)
             {
                 var choice = AnsiConsole.Prompt(new SelectionPrompt<string>()

@@ -9,7 +9,6 @@ namespace CodingTracker.Solomonlol.Controllers
     {
         public void CreateTableIfNotExists();
         public List<CodingSession> GetData();
-        public string GetConString();
         public void UpdateData();
         public void DeleteData();
         public void PrintData();
