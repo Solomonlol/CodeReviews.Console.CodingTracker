@@ -7,11 +7,13 @@ namespace CodingTracker.Solomonlol.Controllers
 {
     internal interface ICodingController
     {
-        public List<CodingSession> GetData();
-        public void UpdateData(int id);
         public void CreateTableIfNotExists();
-        public void DeleteData(int id);
-        public void PrintData();
+        public List<CodingSession> GetData();
         public string GetConString();
+        public void UpdateData();
+        public void DeleteData();
+        public void PrintData();
+        public void CreateData();
+        public void Exit();
     }
 }

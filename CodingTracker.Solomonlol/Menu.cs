@@ -1,29 +1,27 @@
 ﻿using CodingTracker.Solomonlol.Controllers;
+using CodingTracker.Solomonlol.Model;
+using Dapper;
 using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static CodingTracker.Solomonlol.Model.MenuValues;
 
 
 namespace CodingTracker.Solomonlol
 {
     internal class Menu
     {
-
         public void MainMenu()
         {
-            CodingController controller = new CodingController();
-            controller.CreateTableIfNotExists();
-            controller.GetData();
-            var choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
-                .Title("Select an [green]option[/]:")
-                .AddChoices("Show Data", "Add new record", "Update record", "Delete record", "Close app"));
+            while (true)
+            {
+                var choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
+                    .Title("Select an [green]option[/]:")
+                    .AddChoices(menuValues.Keys));
 
-            AnsiConsole.MarkupLine($"Deploying to [blue]{choice}[/]");
-            
-            
+                menuValues[choice]();
+            }
         }
-        
     }
-
 }
