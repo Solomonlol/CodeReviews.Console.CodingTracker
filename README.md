@@ -40,15 +40,14 @@ Once the user stops the timer, a new record containing the current session's tim
 This option close the app
 
 #Lessons Learned
+
 Learned how to use Stopwatch.
-
 Tried creating a menu using a Dictionary instead of a switch statement.
-
 Learned how to use Dapper—it is simpler than ADO.NET.
-
 Gained experience in using a separate JSON file to store the database connection string.
 
 
 #My thoughts
+
 I still have a lot to improve, but progress is evident, as this project was completed faster 
 than the previous one despite the use of new technologies.
