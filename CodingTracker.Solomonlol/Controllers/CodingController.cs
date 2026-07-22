@@ -3,13 +3,10 @@ using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Spectre.Console;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
-using System.Text;
-using System.Timers;
+using static CodingTracker.Solomonlol.Model.MenuValues;
 
 namespace CodingTracker.Solomonlol.Controllers
 {
@@ -29,10 +26,10 @@ namespace CodingTracker.Solomonlol.Controllers
             db.Close();
         }
 
-        public List<CodingSession> GetData()
+        public List<CodingSession> GetData(string? s = null)
         {
             using IDbConnection db = new SqliteConnection(GetConString());
-            return [.. db.Query<CodingSession>("SELECT * FROM CodingSessions")];
+            return [.. db.Query<CodingSession>(s)];
         }
 
         public void CreateData(CodingSession? codingSession=null)
@@ -44,10 +41,12 @@ namespace CodingTracker.Solomonlol.Controllers
                 session = NewRecord();
             }
             else session = codingSession;
+
             using IDbConnection db = new SqliteConnection(GetConString());
             var sqlQuery = "INSERT INTO CodingSessions (Date, StartTime, EndTime, Duration)" +
                 "VALUES (@Date, @StartTime, @EndTime, @Duration)";
             db.Execute(sqlQuery, session);
+            PrintData();
         }
 
         public void DeleteData()
@@ -62,7 +61,12 @@ namespace CodingTracker.Solomonlol.Controllers
                 AnsiConsole.MarkupLine($"[red]Record whith Id={id} does not exists.[/]");
 
             }
-            else AnsiConsole.MarkupLine($"[green]Record whith Id={id} was deleted.[/]");
+            else
+            {
+                PrintData();
+                AnsiConsole.MarkupLine($"[green]Record whith Id={id} was deleted.[/]");
+            }
+            
         }
 
         public void UpdateData()
@@ -84,14 +88,26 @@ namespace CodingTracker.Solomonlol.Controllers
                     "Duration=@Duration " +
                     "WHERE Id=@Id";
                 db.Execute(sqlQuery, session);
+                PrintData();
+                AnsiConsole.MarkupLine($"[green]Record whith Id={id} was upadted.[/]");
             }
-            else AnsiConsole.MarkupLine($"[red]Record whith Id={id} does not exists.[/]");
+            else
+            {
+                PrintData();
+                AnsiConsole.MarkupLine($"[red]Record whith Id={id} does not exists.[/]");
+            }
+            
         }
 
-        public void PrintData()
+        public void PrintData(string? s = null)
         {
             AnsiConsole.Clear();
-            var toPrint = GetData();
+            List<CodingSession> toPrint = new List<CodingSession>();
+            if (s != null)
+            {
+                toPrint = GetData(s);
+            }
+            else toPrint = GetData();
             if (toPrint.Count>0)
             {
                 var table = new Table();
@@ -158,7 +174,6 @@ namespace CodingTracker.Solomonlol.Controllers
         public void StartTimer()
         {
             Stopwatch stopwatch = new Stopwatch();
-            bool isRunning=true;
             DateTime start = DateTime.Now;
             DateTime end = new();
             stopwatch.Start();
@@ -170,20 +185,26 @@ namespace CodingTracker.Solomonlol.Controllers
                     if(key==ConsoleKey.Enter)
                     {
                         stopwatch.Stop();
-                        isRunning = false;
                         end = start+stopwatch.Elapsed;
                         CreateData(new CodingSession(start, end));
                         break;
                     }
                 }
-                if(isRunning)
-                {
-                    Console.Clear();
-                    AnsiConsole.MarkupLine("[green]IT'S CODING TIME![/]\nPress Enter key to stop this session...");
-                    AnsiConsole.MarkupLine($"Current session: {stopwatch.Elapsed.ToString(@"mm\:ss")}");
-                    Thread.Sleep(1000);
-                }
+                
+                Console.Clear();
+                AnsiConsole.MarkupLine("[green]IT'S CODING TIME![/]\nPress Enter key to stop this session...");
+                AnsiConsole.MarkupLine($"Current session: {stopwatch.Elapsed.ToString(@"mm\:ss")}");
+                Thread.Sleep(1000);
             }
+        }
+        public void PrintOrderby()
+        {
+            var choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
+                    .Title("Select an [green]option[/]:")
+                    .AddChoices(printValues.Keys));
+
+            printValues[choice]("");
+              
         }
 
         public void Exit()
