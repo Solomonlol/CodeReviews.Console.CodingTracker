@@ -27,16 +27,20 @@ This create new record. User write start and end time in 'dd.MM.yyyy H:m' format
 
 Data entered by the user must be correct. Otherwise, the program will indicate the incorrectly entered data.
 3.Update record
+
 This option allows the user to make changes to an existing record. 
 
 4.Delete record
+
 This option allows the user to delete an existing record.
 
 5.Timer
+
 This menu item starts a timer and displays the current session time on the console.
 Once the user stops the timer, a new record containing the current session's timing data is created in the database.
 
 6.Exit
+
 This option close the app
 
 #Lessons Learned
