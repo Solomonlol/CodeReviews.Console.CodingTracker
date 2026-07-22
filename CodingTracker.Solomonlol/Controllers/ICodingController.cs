@@ -12,7 +12,7 @@ namespace CodingTracker.Solomonlol.Controllers
         public void UpdateData();
         public void DeleteData();
         public void PrintData();
-        public void CreateData();
+        public void CreateData(CodingSession? codingSession=null);
         public void Exit();
     }
 }

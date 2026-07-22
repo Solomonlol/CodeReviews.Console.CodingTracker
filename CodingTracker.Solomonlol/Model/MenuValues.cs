@@ -15,6 +15,7 @@ namespace CodingTracker.Solomonlol.Model
             { "New record", () => cod.CreateData() },
             { "Update record", () => cod.UpdateData() },
             { "Delete record", () => cod.DeleteData() },
+            { "Timer", ()=>cod.StartTimer()  },
             { "Exit", () => cod.Exit() }
         };
 

@@ -6,9 +6,10 @@ using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Timers;
 
 namespace CodingTracker.Solomonlol.Controllers
 {
@@ -16,55 +17,52 @@ namespace CodingTracker.Solomonlol.Controllers
     {
         public void CreateTableIfNotExists()
         {
-            using (IDbConnection db = new SqliteConnection(GetConString()))
-            {
-                db.Open();
-                var sqlQuery = "CREATE TABLE IF NOT EXISTS CodingSessions" +
-                    "(Id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "Date TEXT NOT NULL," +
-                    "StartTime TEXT NOT NULL," +
-                    "EndTime TEXT NOT NULL," +
-                    "Duration TEXT NOT NULL)";
-                db.Execute(sqlQuery);
-                db.Close();
-            }
+            using IDbConnection db = new SqliteConnection(GetConString());
+            db.Open();
+            var sqlQuery = "CREATE TABLE IF NOT EXISTS CodingSessions" +
+                "(Id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "Date TEXT NOT NULL," +
+                "StartTime TEXT NOT NULL," +
+                "EndTime TEXT NOT NULL," +
+                "Duration TEXT NOT NULL)";
+            db.Execute(sqlQuery);
+            db.Close();
         }
 
         public List<CodingSession> GetData()
         {
-            using(IDbConnection db = new SqliteConnection(GetConString()))
-            {
-                return db.Query<CodingSession>("SELECT * FROM CodingSessions").ToList();
-            }
+            using IDbConnection db = new SqliteConnection(GetConString());
+            return [.. db.Query<CodingSession>("SELECT * FROM CodingSessions")];
         }
 
-        public void CreateData()
+        public void CreateData(CodingSession? codingSession=null)
         {
             PrintData();
-            var session = NewRecord();
-            using (IDbConnection db = new SqliteConnection(GetConString()))
+            CodingSession session = new();
+            if (codingSession == null)
             {
-                var sqlQuery = "INSERT INTO CodingSessions (Date, StartTime, EndTime, Duration)" +
-                    "VALUES (@Date, @StartTime, @EndTime, @Duration)";
-                db.Execute(sqlQuery, session);
+                session = NewRecord();
             }
+            else session = codingSession;
+            using IDbConnection db = new SqliteConnection(GetConString());
+            var sqlQuery = "INSERT INTO CodingSessions (Date, StartTime, EndTime, Duration)" +
+                "VALUES (@Date, @StartTime, @EndTime, @Duration)";
+            db.Execute(sqlQuery, session);
         }
 
         public void DeleteData()
         {
             PrintData();
             NumberInput("Write record Id to delete:", out int id);
-            using (IDbConnection db = new SqliteConnection(GetConString()))
+            using IDbConnection db = new SqliteConnection(GetConString());
+            var sqlQuery = "DELETE FROM CodingSessions WHERE Id=@id";
+            var check = db.Execute(sqlQuery, new { id });
+            if (check == 0)
             {
-                var sqlQuery="DELETE FROM CodingSessions WHERE Id=@id";
-                var check=db.Execute(sqlQuery, new { id });
-                if (check == 0)
-                {
-                    AnsiConsole.MarkupLine($"[red]Record whith Id={id} does not exists.[/]");
+                AnsiConsole.MarkupLine($"[red]Record whith Id={id} does not exists.[/]");
 
-                }
-                else AnsiConsole.MarkupLine($"[green]Record whith Id={id} was deleted.[/]");
             }
+            else AnsiConsole.MarkupLine($"[green]Record whith Id={id} was deleted.[/]");
         }
 
         public void UpdateData()
@@ -72,24 +70,22 @@ namespace CodingTracker.Solomonlol.Controllers
             PrintData();
             NumberInput("Write record Id to update:", out int id);
             string sql = "SELECT COUNT(1) FROM CodingSessions WHERE Id = @Id";
-            
-            
-            using (IDbConnection db = new SqliteConnection(GetConString()))
-            {
-                var checkIfExist = db.ExecuteScalar<bool>(sql, new { Id = id });
-                if (checkIfExist)
-                {
-                    var session = NewRecord(id);
 
-                    var sqlQuery = "UPDATE CodingSessions SET Date=@Date," +
-                        "StartTime=@StartTime," +
-                        "EndTime=@EndTime," +
-                        "Duration=@Duration " +
-                        "WHERE Id=@Id";
-                    db.Execute(sqlQuery, session);
-                }
-                else AnsiConsole.MarkupLine($"[red]Record whith Id={id} does not exists.[/]");
+
+            using IDbConnection db = new SqliteConnection(GetConString());
+            var checkIfExist = db.ExecuteScalar<bool>(sql, new { Id = id });
+            if (checkIfExist)
+            {
+                var session = NewRecord(id);
+
+                var sqlQuery = "UPDATE CodingSessions SET Date=@Date," +
+                    "StartTime=@StartTime," +
+                    "EndTime=@EndTime," +
+                    "Duration=@Duration " +
+                    "WHERE Id=@Id";
+                db.Execute(sqlQuery, session);
             }
+            else AnsiConsole.MarkupLine($"[red]Record whith Id={id} does not exists.[/]");
         }
 
         public void PrintData()
@@ -114,7 +110,7 @@ namespace CodingTracker.Solomonlol.Controllers
             else AnsiConsole.MarkupLine("[red]Database is empty.[/]");
         }
 
-        private string GetConString()
+        private static string GetConString()
         {
             IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile("appsetings.json")
@@ -126,7 +122,7 @@ namespace CodingTracker.Solomonlol.Controllers
 
         private CodingSession NewRecord(int? id = null)
         {
-            DateTime startTime = default, endTime = default;
+            DateTime startTime, endTime;
             do
             {
                 PrintData();
@@ -159,6 +155,37 @@ namespace CodingTracker.Solomonlol.Controllers
                 AnsiConsole.MarkupLine("[red]Wrong data format. The string must contain only digits above zero. Try again.[/]");
             }
         }
+        public void StartTimer()
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            bool isRunning=true;
+            DateTime start = DateTime.Now;
+            DateTime end = new();
+            stopwatch.Start();
+            while(true)
+            {
+                if(Console.KeyAvailable)
+                {
+                    var key = Console.ReadKey(true).Key;
+                    if(key==ConsoleKey.Enter)
+                    {
+                        stopwatch.Stop();
+                        isRunning = false;
+                        end = start+stopwatch.Elapsed;
+                        CreateData(new CodingSession(start, end));
+                        break;
+                    }
+                }
+                if(isRunning)
+                {
+                    Console.Clear();
+                    AnsiConsole.MarkupLine("[green]IT'S CODING TIME![/]\nPress Enter key to stop this session...");
+                    AnsiConsole.MarkupLine($"Current session: {stopwatch.Elapsed.ToString(@"mm\:ss")}");
+                    Thread.Sleep(1000);
+                }
+            }
+        }
+
         public void Exit()
         {
             Environment.Exit(0);

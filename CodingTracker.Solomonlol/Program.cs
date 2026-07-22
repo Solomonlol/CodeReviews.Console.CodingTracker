@@ -5,4 +5,4 @@ using Spectre.Console;
 
 
 Menu menu = new();
-menu.MainMenu();
+Menu.MainMenu();

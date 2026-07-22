@@ -13,7 +13,7 @@ namespace CodingTracker.Solomonlol
     internal class Menu
     {
         
-        public void MainMenu()
+        public static void MainMenu()
         {
             cod.CreateTableIfNotExists();
             while (true)
