@@ -28,6 +28,7 @@ namespace CodingTracker.Solomonlol.Controllers
 
         public List<CodingSession> GetData(string? s = null)
         {
+            if (s == null) s = "SELECT * FROM CodingSessions";
             using IDbConnection db = new SqliteConnection(GetConString());
             return [.. db.Query<CodingSession>(s)];
         }

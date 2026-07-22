@@ -18,21 +18,12 @@ namespace CodingTracker.Solomonlol.Model
 
         public static Dictionary<string, Action<string>> printValues = new()
         {
-            { "Print all records", (s) => cod.PrintData("SELECT * FROM CodingSessions") },
+            { "Print", (s) => cod.PrintData() },
             { "Order by Date Ascending", (s) => cod.PrintData("SELECT * FROM CodingSessions ORDER BY Date ASC") },
             { "Order by Date Descending", (s) => cod.PrintData("SELECT * FROM CodingSessions ORDER BY Date DESC") },
             { "Order by Duration Ascending", (s) => cod.PrintData("SELECT * FROM CodingSessions ORDER BY Duration ASC") },
             { "Order by Duration Descending", (s) => cod.PrintData("SELECT * FROM CodingSessions ORDER BY Duration DESC") },
         };
-
-        //public static Dictionary<string, Action<string>> printOrderByValuesColumn = new()
-        //{
-        //    { "Date Ascending", (s) => cod.PrintData(s) },
-        //    { "Date Descending", (s) => cod.PrintData(s) },
-        //    { "Duration Ascending", (s) => cod.PrintData(s) },
-        //    { "Duration Descending", (s) => cod.PrintData(s) }
-        //};
-
 
     }
 }
